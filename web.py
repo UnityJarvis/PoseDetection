@@ -2,16 +2,14 @@ import streamlit as st
 from PIL import Image
 import cv2
 import numpy as np
-import math
+# import math
 import cv2
-import numpy as np
+# import numpy as np
 from time import time
 import mediapipe as mp
 import matplotlib.pyplot as plt
 # from IPython.display import HTML
 import modell
-
-
 
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.3, model_complexity=2)
@@ -19,6 +17,7 @@ mp_drawing = mp.solutions.drawing_utils
 
 # Function to process the image and get the output
 def process_image(image):
+    print("Func")
     # Process the image using your .ipynb code here
     # For this example, we'll just convert it to grayscale using OpenCV
     sample_img = np.array(image)
@@ -71,14 +70,25 @@ def record():
     import cv2
     import mediapipe as mp
     import numpy as np
+    import pandas as pd
     import time
 
     # Initialize MediaPipe Pose model
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose(static_image_mode=False, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-    # List of pose landmarks you want to store
-    points = [...]  # Add your desired pose landmarks here
+    points = mp_pose.PoseLandmark       
+
+    data = []
+
+    for p in points:
+            x = str(p)[13:]
+            data.append(x + "_x")
+            data.append(x + "_y")
+            data.append(x + "_z")
+            data.append(x + "_vis")
+    data = pd.DataFrame(columns = data) 
+
 
     # Function to capture image and store pose landmarks
     def capture_image_and_landmarks():
@@ -118,11 +128,7 @@ def record():
     last_frame = capture_image_and_landmarks()
 
     # Now you have the last_frame, and you can do further processing or saving if needed.
-    if last_frame is not None:
-        # plt.title("sample_Image")
-        # plt.axis('off')                       # Removes the labels
-        # plt.imshow(last_frame[:,:,::-1])      # Convert BGR to RGB as plt.show() expects RGB
-        # plt.show()    
+    if last_frame is not None:   
         return last_frame                        # Display the image
     else:
         print("No frames captured.")
@@ -167,27 +173,34 @@ def main():
         st.subheader("Record a Video")
         if st.button("Start"):
             frame = record()
-            if st.button("Process Image"):
-                # Process the image and get the output
-                output_image = process_image(frame)
-
-                # Display the processed output
-                st.image(output_image, caption="Processed Image", use_column_width=True)
-            if st.button("Blackie Image"):
-                # Process the image and get the output
-                out_image = Blackie_image(frame)
-
-                # Display the processed output
-                st.image(out_image, caption="Blackie Image", use_column_width=True)
-                # final = modell.predict_image(out_image)
-                # st.write(final)
-                # col1, col2 = st.columns(2)
-                # col1.image(output_image, caption="Processed Image", use_column_width=True)
-                # col2.image(out_image , caption="Blackie Image", use_column_width=True)
-            if st.button("Predict Pose"):
-                final = modell.predict_image(frame)
-                st.title("Pose" f"{final}")
+            # if frame is not None:
+            # Display the uploaded image
+                # image = Image.open(frame)
+                # st.image(frame, caption="Captured Image", use_column_width=True)
             
+                # if st.button("Process Image"):
+                # st.text("Works")
+                    # Process the image and get the output
+            output_image = process_image(frame)
+                    # st.text("Works")
+                    # Display the processed output
+            st.image(output_image, caption="Processed Image", use_column_width=True)
+                    # st.text("Works")
+            # if st.button("Blackie Image"):
+                    # Process the image and get the output
+            out_image = Blackie_image(frame)
+
+                    # Display the processed output
+            st.image(out_image, caption="Blackie Image", use_column_width=True)
+                    # final = modell.predict_image(out_image)
+
+                    # st.write(final)
+                    # col1, col2 = st.columns(2)
+                    # col1.image(output_image, caption="Processed Image", use_column_width=True)
+                    # col2.image(out_image , caption="Blackie Image", use_column_width=True)
+                # if st.button("Predict Pose"):
+            final = modell.predict_image(frame)
+            st.title("Pose" f"{final}")
 
 
 if __name__ == "__main__":

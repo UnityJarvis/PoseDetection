@@ -316,7 +316,25 @@ def predict_image(image):
 
     temp = np.array(temp)         
     temp = temp.reshape(-1, 169)   
+    
+    predictions = classifier.predict(temp)
+    # # Get the predicted class index and confidence
+    # predicted_class_index = np.argmax(predictions[0])
+    # confidence = predictions[0][predicted_class_index]
 
-    y_pred = classifier.predict(temp)
-    y_pred_class_names = encoder.inverse_transform(y_pred)
+    # # Set the confidence threshold (adjust this value as per your requirement)
+    # confidence_threshold = 0.5
+
+    # # Check if the confidence is above the threshold
+    # if confidence >= confidence_threshold:
+    #     # The model is confident in its prediction
+    #     # print("Predicted Pose Class:", predicted_class_index)
+    #     # print("Confidence:", confidence)
+    y_pred_class_names = encoder.inverse_transform(predictions)
+    # else:
+    #     # The model is not confident in its prediction
+    #     # print("The model is not confident in recognizing this pose.")
+    #     # print("Highest Confidence Class:", predicted_class_index)
+    #     # print("Confidence:", confidence)
+    #     y_pred_class_names = "can't recognize"
     return y_pred_class_names
