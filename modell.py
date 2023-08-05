@@ -63,16 +63,10 @@ def predict_image(image):
     classifier = RandomForestClassifier(random_state=42)
 
     classifier.fit(X_train,Y_train)
-
-    # y_pred = classifier.predict(X_test)
-    # accuracy_rf = accuracy_score(Y_test,y_pred)   
+  
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.3, model_complexity=2)
     mp_drawing = mp.solutions.drawing_utils
-
-    # sample_img_array  = cv2.imread(r"OIP.jpeg")
-    # sample_img_array = np.array(image)
-
 
     points = mp_pose.PoseLandmark   
     data = []
@@ -89,19 +83,14 @@ def predict_image(image):
     temp = []
     img_array = np.array(image)
 
-    # img_array = cv2.imread(r"OIP.jpeg")
-
-        # imageWidth, imageHeight = img_array.shape[:2]
-
     img_arrayRGB = cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB)
-        # results = pose.process(cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB))
-
-    blackie = np.zeros(img_array.shape) # Blank image
+    
+    blackie = np.zeros(img_array.shape) 
 
     results = pose.process(img_arrayRGB)
 
     if results.pose_landmarks:
-        mp_drawing.draw_landmarks(blackie, results.pose_landmarks, mp_pose.POSE_CONNECTIONS) # draw landmarks on blackie
+        mp_drawing.draw_landmarks(blackie, results.pose_landmarks, mp_pose.POSE_CONNECTIONS) 
 
         landmarks = results.pose_landmarks.landmark
 
@@ -109,7 +98,6 @@ def predict_image(image):
         dict = {}
         for point, j in zip(points, landmarks):
             temp = temp + [j.x, j.y, j.z]
-    # temp.extend([landmark.x, landmark.y, landmark.z])
             key = point.name
             value = [temp[count], temp[count+1], temp[count+2]]
             dict[key] = value
@@ -254,7 +242,6 @@ def predict_image(image):
     cos_angle = AdotB / (modA * modB)
     angle = np.arccos(cos_angle)
     c67 = np.degrees(angle)
-    # print(right_knee_mid_hip_left_knee )
 
 
     Ax = dict['RIGHT_KNEE'][0] - dict['RIGHT_HIP'][0]
@@ -318,23 +305,5 @@ def predict_image(image):
     temp = temp.reshape(-1, 169)   
     
     predictions = classifier.predict(temp)
-    # # Get the predicted class index and confidence
-    # predicted_class_index = np.argmax(predictions[0])
-    # confidence = predictions[0][predicted_class_index]
-
-    # # Set the confidence threshold (adjust this value as per your requirement)
-    # confidence_threshold = 0.5
-
-    # # Check if the confidence is above the threshold
-    # if confidence >= confidence_threshold:
-    #     # The model is confident in its prediction
-    #     # print("Predicted Pose Class:", predicted_class_index)
-    #     # print("Confidence:", confidence)
     y_pred_class_names = encoder.inverse_transform(predictions)
-    # else:
-    #     # The model is not confident in its prediction
-    #     # print("The model is not confident in recognizing this pose.")
-    #     # print("Highest Confidence Class:", predicted_class_index)
-    #     # print("Confidence:", confidence)
-    #     y_pred_class_names = "can't recognize"
     return y_pred_class_names
